@@ -8,13 +8,19 @@ suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(ggplot2))
 suppressPackageStartupMessages(library(ggrepel))
 
-lognorm <- read.csv("./csv_files/associated_na/lognorm_data.csv", check.names=FALSE)
+# folder = "skin_floor_na"
+# folder = "associated_na"
+folder = "skinVSskin_associated_na"
+
+
+lognorm <- read.csv(paste("./csv_files/",folder,"/lognorm_data.csv",sep=""), check.names=FALSE)
 phenos <- read.csv("./csv_files/phenotypes.csv") # for naming the graphs
 IDs = distinct(lognorm, Study_ID)$Study_ID
 
+
 ## Aims:
-# 1: preform all the wilcox
-# 2: graph 
+# 1: preform all the wilcox between skin and floor counts for one study
+# 2: graph it against the p-value for the wilcox of the other studies
 
 compute_pvals <- function(subsetted_data, Study_ID){
 	
@@ -120,7 +126,7 @@ for( ID1 in IDs ){
 			phen2 <- phen2[1,2]
 
 
-			png(paste("./output/pval_v_pval/associated_na/plot_",ID1,"v",ID2,".png",sep=""), width = 1050, height = 480)
+			png(paste("./output/pval_v_pval/",folder,"/plot_",ID1,"v",ID2,".png",sep=""), width = 1050, height = 480)
 
 			plot = ggplot(df, aes(x = df[[pval_ID1]], y = df[[pval_ID2]], label = bacteria)) +
 				geom_point() +
@@ -132,8 +138,10 @@ for( ID1 in IDs ){
 				# make the x and y ranges the same
 				# coord_cartesian(xlim = mylims, ylim = mylims) +
 				geom_text_repel(max.overlaps = 10, force_pull = 1, nudge_y = 1,size = 3) +
-				labs(title = "p-value vs p-value plot", x = phen1, y = phen2) +
-				theme(plot.title = element_text(size=22))
+				labs(title = "log10 p-value vs p-value plot", x = phen1, y = phen2) +
+				theme(plot.title = element_text(size=22), axis.text=element_text(size=11),
+        			axis.title=element_text(size=15)) 
+				
 
 			print(plot)
 

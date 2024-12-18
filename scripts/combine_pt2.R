@@ -3,8 +3,12 @@
 .libPaths( c( .libPaths(), "~/my_R_libs") )
 suppressPackageStartupMessages(library(dplyr))
 
+### combines all the single csv_files into one
 
 ### this is what happens when I do bind_rows(combine_otus, df) ###
+
+# s = Genus
+# all other cols are samples
 
 # s a b c 
 # x 1 2 3

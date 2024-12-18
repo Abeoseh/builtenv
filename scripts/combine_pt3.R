@@ -77,15 +77,16 @@ unneeded_phenotypes <- function(ontology_df, current_ID, details_df, details_phe
 
 	# ontology_df is a dataframe with the following columns: 
 	### ID: contains all the Study_IDs
-	### surface: matches the samples names in details_phenotype
-	### common_name: the ontology between studies... all phenotypes that are unneeded are NA!! 
+	### surface: the original sample names ex bed rail, kitchen table, floor corner
+	### common_name: the ontology between studies (a.k.a chosen common names)... all phenotypes that are unneeded are NA!! 
 	
 	# current_ID is the Study ID of the current study
 	# details_df is the metadata file
 	# details_phenotype is the name of the phenotype column in details_df
 	# ontology is a vector with the desired ontology
 
-# details_df_and_unneeded_phenotypes <- unneeded_phenotypes(ontology, 10172, details_10172, "sample_type", c("skin_associated", "floor_associated"))
+	# example of how to run
+	### details_df_and_unneeded_phenotypes <- unneeded_phenotypes(ontology, 10172, details_10172, "sample_type", c("skin associated", "floor associated"))
 
 
 	current_ontology <- select(ontology_df, ID, surface, common_name) %>% filter(ID == current_ID & !(is.na(common_name))) 
@@ -194,14 +195,14 @@ count = count(details_10172, sample_type)
 count$Study_ID = 10172
 
 
-details_df_and_unneeded_phenotypes <- unneeded_phenotypes(ontology, 10172, details_10172, "sample_type", c("skin", "floor"))
+details_df_and_unneeded_phenotypes <- unneeded_phenotypes(ontology, 10172, details_10172, "sample_type", c("skin", "skin associated"))
 
 
 current_ontology <- select(ontology, ID, surface, common_name) %>% filter(ID == 10172 & !(is.na(common_name))) 
 
 
 # k in phenotypes df must have the same name as the ontology df
-phenotypes <- data.frame(k = c("skin", "floor"),
+phenotypes <- data.frame(k = c("skin", "skin associated"),
                          Phenotype = c(1, 0))
 
 combine_otus <- add_info_cols(combine_otus, details_df_and_unneeded_phenotypes$df, c("sample_type", "sample_name"), 
@@ -216,10 +217,10 @@ count(details_11740, surface_sampledsample) %>% print()
 
 current_ontology <- select(ontology, ID, surface, common_name) %>% filter(ID == 11740 & !(is.na(common_name))) 
 
-details_df_and_unneeded_phenotypes <- unneeded_phenotypes(ontology, 11740, details_11740, "surface_sampledsample", c("skin", "floor"))
+details_df_and_unneeded_phenotypes <- unneeded_phenotypes(ontology, 11740, details_11740, "surface_sampledsample", c("skin", "skin associated"))
 
 # k in phenotypes df must have the same name as the ontology df
-phenotypes  <- data.frame(k = c("skin", "floor"),
+phenotypes  <- data.frame(k = c("skin", "skin associated"),
                           Phenotype = c(1, 0))
 
 
@@ -236,10 +237,10 @@ count(details_12470, description) %>% print()
 
 current_ontology <- select(ontology, ID, surface, common_name) %>% filter(ID == 12470 & !(is.na(common_name))) 
 
-details_df_and_unneeded_phenotypes <- unneeded_phenotypes(ontology, 12470, details_12470, "description", c("skin", "floor"))
+details_df_and_unneeded_phenotypes <- unneeded_phenotypes(ontology, 12470, details_12470, "description", c("skin", "skin associated"))
 
 # k in phenotypes df must have the same name as the ontology df
-phenotypes  <- data.frame(k = c("skin", "floor"),
+phenotypes  <- data.frame(k = c("skin", "skin associated"),
                           Phenotype = c(1, 0))
 
 combine_otus <- add_info_cols(combine_otus, details_df_and_unneeded_phenotypes$df, c("description", "sample_name"), 
@@ -256,10 +257,10 @@ count(details_2192, subject_surface) %>% print()
 
 current_ontology <- select(ontology, ID, surface, common_name) %>% filter(ID == 2192 & !(is.na(common_name))) 
 
-details_df_and_unneeded_phenotypes <- unneeded_phenotypes(ontology, 2192, details_2192, "subject_surface", c("skin", "floor"))
+details_df_and_unneeded_phenotypes <- unneeded_phenotypes(ontology, 2192, details_2192, "subject_surface", c("skin", "skin associated"))
 
 # k in phenotypes df must have the same name as the ontology df
-phenotypes  <- data.frame(k = c("skin", "floor"),
+phenotypes  <- data.frame(k = c("skin", "skin associated"),
                           Phenotype = c(1, 0))
 
 combine_otus <- add_info_cols(combine_otus, details_df_and_unneeded_phenotypes$df, c("subject_surface", "sample_name"), 
@@ -315,7 +316,7 @@ final_df <- final_df[,-c(filtered_indicies)]
 final_df <- final_df[apply(final_df[,-c(1:3)], 1, function(x) !all(x==0)),]
 
 
-write.csv(final_df, "./csv_files/combine/final_df.csv", row.names = FALSE)
+# write.csv(final_df, "./csv_files/combine/final_df.csv", row.names = FALSE)
 
 
 #### write output to file ####
@@ -392,11 +393,11 @@ lognorm <- function(table, dataframe, csv_file, filter = NULL, return_table = NU
   }
   
   else(write.csv(table, csv_file, row.names = FALSE))
-  
+  print(dim(table))
   if(!is.null(return_table)){return(table)}
   
 
 }
 
-lognorm(final_df[4:length(final_df)], final_df, "./csv_files/skin_floor_na/lognorm_data.csv")
+lognorm(final_df[4:length(final_df)], final_df, "./csv_files/skinVSskin_associated/lognorm_data.csv")
 print("script complete")
