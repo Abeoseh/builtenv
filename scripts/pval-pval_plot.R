@@ -8,12 +8,15 @@ suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(ggplot2))
 suppressPackageStartupMessages(library(ggrepel))
 
-# folder = "skin_floor_na"
-# folder = "associated_na"
-folder = "skinVSskin_associated_na"
+args <- commandArgs(trailingOnly = TRUE)
+input = args[1]
+output = args[2]
+
+print(paste("input folder:",input))
+print(paste("output folder:",output))
 
 
-lognorm <- read.csv(paste("./csv_files/",folder,"/lognorm_data.csv",sep=""), check.names=FALSE)
+lognorm <- read.csv(paste("./csv_files/",input,"/lognorm_data.csv",sep=""), check.names=FALSE)
 phenos <- read.csv("./csv_files/phenotypes.csv") # for naming the graphs
 IDs = distinct(lognorm, Study_ID)$Study_ID
 
@@ -126,7 +129,7 @@ for( ID1 in IDs ){
 			phen2 <- phen2[1,2]
 
 
-			png(paste("./output/pval_v_pval/",folder,"/plot_",ID1,"v",ID2,".png",sep=""), width = 1050, height = 480)
+			png(paste("./output/",output,"/pval_v_pval/plot_",ID1,"v",ID2,".png",sep=""), width = 1050, height = 480)
 
 			plot = ggplot(df, aes(x = df[[pval_ID1]], y = df[[pval_ID2]], label = bacteria)) +
 				geom_point() +

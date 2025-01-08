@@ -14,6 +14,8 @@ args <- commandArgs(trailingOnly = TRUE)
 file = args[1]
 permutations = as.numeric(args[2])
 ID_label = as.numeric(args[3])
+folder = args[4]
+
 
 DEBIAS_data <- read.csv(file, colClasses = c("Phenotype" = "factor"))
 
@@ -30,7 +32,7 @@ roc.df <- data.frame(matrix(ncol = 5, nrow = 0))
 colnames(roc.df) <- c("Study_ID", "DEBIAS", "Permutation", "sensitivities", "specificities")
 
 
-png(paste("./output/associated_2192/post_DEBIAS-M_RF_lognorm_ROC_", ID_label, ".png", sep=""))#, height = 24, width = 24)
+png(paste("./output/",folder,"/ROC_histograms/post_DEBIAS-M_RF_lognorm_ROC_", ID_label, ".png", sep=""))#, height = 24, width = 24)
 
 
 training <- filter(DEBIAS_data, Study_ID != ID_label)
@@ -89,11 +91,11 @@ p
 
 dev.off()  
 
-png(paste("./output/associated_2192/post_DEBIAS-M_RF_lognorm_histogram_", ID_label, ".png", sep=""))
+png(paste("./output/",folder,"/ROC_histograms/post_DEBIAS-M_RF_lognorm_histogram_", ID_label, ".png", sep=""))
 
 a <- auc.df[auc.df$Permutation == 0,]$AUC
 samp <- auc.df[auc.df$Permutation == 1,]$AUC
-z = (a-mean(samp))/(sd(samp)/sqrt(1))
+z = (a-mean(samp))/sd(samp) # 1 sample z-test
 for.pval = pnorm(z, lower.tail = FALSE)
 
 g <- ggplot() + geom_histogram(data = filter(auc.df, Permutation == TRUE), aes(x = AUC), bins = 40) +
@@ -113,12 +115,12 @@ print(paste(ID_label, " done."))
 #### Write to CSV files ####
 
 # AUCs
-AUC_filename <- "./csv_files/AUCs/associated_2192/builtenv_AUCs.csv"
-pval_filename <- "./csv_files/AUCs/associated_2192/builtenv_AUC_pvals.csv"
-ROC_filename <- "./csv_files/AUCs/associated_2192/builtenv_ROCs.csv"
+AUC_filename <- paste("./output/",folder,"/AUCs/builtenv_AUCs.csv",sep="")
+pval_filename <- paste("./output/",folder,"/AUCs/builtenv_AUC_pvals.csv",sep="")
+ROC_filename <- paste("./output/",folder,"/AUCs/builtenv_ROCs.csv",sep="")
 
-write.csv(auc.df, paste("./csv_files/AUCs/associated_2192/builtenv_post_DEBIAS_",ID_label,"_AUCs.csv",sep=""), row.names = FALSE)
-write.csv(roc.df, paste("./csv_files/AUCs/associated_2192/builtenv_pre_DEBIAS_",ID_label,"_ROCs.csv",sep=""), row.names = FALSE)
+write.csv(auc.df, paste("./output/",folder,"/AUCs/builtenv_post_DEBIAS_",ID_label,"_AUCs.csv",sep=""), row.names = FALSE)
+write.csv(auc.df, paste("./output/",folder,"/AUCs/builtenv_post_DEBIAS_",ID_label,"_ROCs.csv",sep=""), row.names = FALSE)
 
 ## AUC
 if(file.exists(AUC_filename)){
