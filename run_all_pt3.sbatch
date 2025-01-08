@@ -19,7 +19,9 @@ cd $SLURM_SUBMIT_DIR
 
 module load R # load modules
 
-Rscript scripts/random_forest_2.R $1 $2 $3 &> ./logs/run_rf_2192/run_rf_post_$3.log
+Rscript scripts/random_forest_2.R $1 $2 $3 $4 &> ./output/$4/logs/run_rf_post_$3.log
+
+
 
 echo ""
 echo "======================================================"

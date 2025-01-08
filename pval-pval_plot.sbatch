@@ -15,7 +15,12 @@ echo "" cd $SLURM_SUBMIT_DIR
 
 module load R
 
-Rscript ./scripts/pval-pval_plot.R &> logs/pval-pval_plot/pval-pval_plot.log
+
+if [ ! -d "./output/$2/pval_pval" ]; then
+	mkdir ./output/$2/pval_v_pval
+	mkdir ./output/$2/logs/pval-pval_plot
+fi
+Rscript ./scripts/pval-pval_plot.R $1 $2 &> ./output/$2/logs/pval-pval_plot/pval-pval_plot.log
 
 
 echo ""

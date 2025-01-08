@@ -15,8 +15,8 @@ echo "Num Tasks : $SLURM_NTASKS total [$SLURM_NNODES nodes @ $SLURM_CPUS_ON_NODE
 echo "======================================================"
 cd $SLURM_SUBMIT_DIR
 
-module load anaconda3/2022.10 # load modules
-python scripts/DEBIAS-M_semi_leaky.py $1 &> ~/builtenv/logs/run_dm_2192/run_DEBIAS-M_out_${1}.log &
+# module load anaconda3/2023.09 # load modules... not needed since it's loaded by default
+python scripts/DEBIAS-M_semi_leaky.py $1 $2 $3 &> ./output/$2/logs/run_DEBIAS-M_out_${1}.log &
 
 wait
 

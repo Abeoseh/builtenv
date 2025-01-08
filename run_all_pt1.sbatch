@@ -17,11 +17,7 @@ cd $SLURM_SUBMIT_DIR
 
 module load R # load modules
 
-Rscript scripts/random_forest_1.R $1 $2 $3 &> ~/builtenv/logs/run_rf_2192/run_rf_pre_$1.log
-
-# Rscript scripts/random_forest_1.R $1 $2 $3 &> ~/builtenv/logs/run_rf/run_rf_pre_$1.log &
-
-# wait
+Rscript scripts/random_forest_1.R $1 $2 $3 $4 &> ./output/$3/logs/run_rf_pre_$1.log 
 
 echo ""
 echo "======================================================"
