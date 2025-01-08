@@ -13,9 +13,10 @@ suppressPackageStartupMessages(library(ggplot2))
 args <- commandArgs(trailingOnly = TRUE)
 i = as.numeric(args[1])
 permutations = as.numeric(args[2])
+folder = args[3]
 
 # folder = "associated_2192"
-folder = "skinVSskin_associated"
+# folder = "skinVSskin_associated"
 
 lognorm_out <- read.csv(paste("./csv_files/",folder,"/lognorm_data.csv",sep=""), colClasses = c("Phenotype" = "factor"))
 phenos <- read.csv("./csv_files/phenotypes.csv") # for naming the graphs
@@ -37,7 +38,7 @@ colnames(roc.df) <- c("Study_ID", "DEBIAS", "Permutation", "sensitivities", "spe
 
 
 
-png(paste("./output/",folder,"/pre_DEBIAS-M_RF_lognorm_ROC_", IDs[i], ".png", sep=""))#, height = 24, width = 24)
+png(paste("./output/",folder,"/ROC_histograms/pre_DEBIAS-M_RF_lognorm_ROC_", IDs[i], ".png", sep=""))#, height = 24, width = 24)
 # par(mar=c(3,3,1,0))#, mfrow=c(2,2))
 
 
@@ -64,7 +65,6 @@ auc.df[nrow(auc.df) + 1,] = c(IDs[i], auc(rf_roc), FALSE, FALSE)
 df <- data.frame(Study_ID = IDs[i], DEBIAS = TRUE, Permutation = 0, sensitivities = rf_roc$sensitivities, specificities = rf_roc$specificities)
 roc.df <- rbind(roc.df, df)
 
-
 ## plot ROC of actual data
 p <- plot(rf_roc, add = FALSE, col = "red", print.auc = TRUE)
 phen <- filter(phenos, ID == IDs[i])
@@ -78,6 +78,7 @@ title(paste("Training without: ", phen, sep=""), line = + 2.5, cex.main=1.5)
      training$Phenotype <- sample(training$Phenotype)
      set.seed(100)
      testing$Phenotype <- sample(testing$Phenotype)
+     
      ## do random forest
      set.seed(100)
      RF_fit <- randomForest(Phenotype~., method = "class", data = training)
@@ -99,11 +100,11 @@ p
 
 dev.off()  
 
-png(paste("./output/",folder,"/pre_DEBIAS-M_RF_lognorm_histogram_", IDs[i], ".png", sep=""))
+png(paste("./output/",folder,"/ROC_histograms/pre_DEBIAS-M_RF_lognorm_histogram_", IDs[i], ".png", sep=""))
 
 a <- auc.df[auc.df$Permutation == 0,]$AUC
 samp <- auc.df[auc.df$Permutation == 1,]$AUC
-z = (a-mean(samp))/(sd(samp)/sqrt(1))
+z = (a-mean(samp))/sd(samp) # 1 sample z-test
 for.pval = pnorm(z, lower.tail = FALSE)
 
 g <- ggplot() + geom_histogram(data = filter(auc.df, Permutation == TRUE), aes(x = AUC), bins = 40) +
@@ -123,13 +124,13 @@ dev.off()
 print(paste(i, "of", length(IDs), " done.", IDs[i]))
 
 #### Write to CSV files ####
-AUC_filename <- paste("./csv_files/AUCs/",folder,"/builtenv_AUCs.csv",sep="")
-pval_filename <- paste("./csv_files/AUCs/",folder,"/builtenv_AUC_pvals.csv",sep="")
-ROC_filename <- paste("./csv_files/AUCs/",folder,"/builtenv_ROCs.csv",sep="")
+AUC_filename <- paste("./output/",folder,"/AUCs/builtenv_AUCs.csv",sep="")
+pval_filename <- paste("./output/",folder,"/AUCs/builtenv_AUC_pvals.csv",sep="")
+ROC_filename <- paste("./output/",folder,"/AUCs/builtenv_ROCs.csv",sep="")
 
 
-write.csv(auc.df, paste("./csv_files/AUCs/",folder,"/builtenv_pre_DEBIAS_",IDs[i],"_AUCs.csv",sep=""), row.names = FALSE)
-write.csv(roc.df, paste("./csv_files/AUCs/",folder,"/builtenv_pre_DEBIAS_",IDs[i],"_ROCs.csv",sep=""), row.names = FALSE)
+write.csv(auc.df, paste("./output/",folder,"/AUCs/builtenv_pre_DEBIAS_",IDs[i],"_AUCs.csv",sep=""), row.names = FALSE)
+write.csv(roc.df, paste("./output/",folder,"/AUCs/builtenv_pre_DEBIAS_",IDs[i],"_ROCs.csv",sep=""), row.names = FALSE)
 
 ## AUC
 if(file.exists(AUC_filename)){

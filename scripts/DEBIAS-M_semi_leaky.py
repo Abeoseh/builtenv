@@ -4,8 +4,12 @@ import debiasm
 import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_auc_score
+import argparse
 
-log_DEBIAS = pd.read_csv("./csv_files/associated_2192/lognorm_data.csv") # read in data
+# parse folder argument
+folder = str(sys.argv[2])
+
+log_DEBIAS = pd.read_csv(f"./csv_files/{folder}/lognorm_data.csv") # read in data
 data = log_DEBIAS.iloc[:,3:len(log_DEBIAS)] # select the case, Study ID (0 through amount of studies - 1), and data columns
 
 ## the read count matrix and "batches" a.k.a sample_IDs
@@ -37,7 +41,7 @@ X_with_batch[:10, :10]
 # (1 weight file and one "normalized" dataframe)
 
 # this means the training will be done without the study you passed as a command line argument 
-i = int(sys.argv[1])
+i = int(sys.argv[1]) 
 i = i-1
 val_inds = batches==i
 X_train, X_val = X_with_batch[~val_inds], X_with_batch[val_inds]
@@ -73,7 +77,7 @@ frames = [first_cols, debiased_df]
 
 merged = pd.concat(frames, axis=1)
 
-merged.to_csv(f"./csv_files/DEBIAS-M_runs/associated_2192/builtenv_debiased_lognorm_{id_dict[i]}.csv", index = False)
+merged.to_csv(f"./output/{folder}/DEBIAS-M_runs/builtenv_debiased_lognorm_{id_dict[i]}.csv", index = False)
 
 
 weights = dmc.model.batch_weights
@@ -91,4 +95,4 @@ weights_df = weights_df.transpose()
 
 
 
-weights_df.to_csv(f"./csv_files/DEBIAS-M_runs/associated_2192/builtenv_debias_weights_{id_dict[i]}.csv")
+weights_df.to_csv(f"./output/{folder}/DEBIAS-M_runs/builtenv_debias_weights_{id_dict[i]}.csv")

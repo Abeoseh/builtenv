@@ -9,8 +9,8 @@ suppressPackageStartupMessages(library(ggplot2))
 suppressPackageStartupMessages(library(ggrepel))
 
 # folder = "skin_floor_na"
-# folder = "associated_na"
-folder = "skinVSskin_associated_na"
+folder = "associated_na"
+# folder = "skinVSskin_associated_na"
 
 
 lognorm <- read.csv(paste("./csv_files/",folder,"/lognorm_data.csv",sep=""), check.names=FALSE)
@@ -126,7 +126,7 @@ for( ID1 in IDs ){
 			phen2 <- phen2[1,2]
 
 
-			png(paste("./output/pval_v_pval/",folder,"/plot_",ID1,"v",ID2,".png",sep=""), width = 1050, height = 480)
+			png(paste("./output/",strsplit(folder, "_na")[[1]],"/pval_v_pval/plot_",ID1,"v",ID2,".png",sep=""), width = 1050, height = 480)
 
 			plot = ggplot(df, aes(x = df[[pval_ID1]], y = df[[pval_ID2]], label = bacteria)) +
 				geom_point() +
@@ -151,5 +151,4 @@ for( ID1 in IDs ){
 }
 
 print("done")
-
 
